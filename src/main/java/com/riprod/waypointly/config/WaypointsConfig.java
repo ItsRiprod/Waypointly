@@ -1,9 +1,9 @@
-package es.boffmedia.waypoints.config;
+package com.riprod.waypointly.config;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import es.boffmedia.waypoints.Constants;
+import com.riprod.waypointly.Constants;
 
 /**
  * Configuration class for Waypoints plugin

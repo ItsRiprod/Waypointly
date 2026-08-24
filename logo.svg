@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="180"
+   height="180"
+   viewBox="0 0 180 180"
+   version="1.1"
+   id="svg1"
+   inkscape:export-filename="../Waypoints/src/main/resources/icon-256.png"
+   inkscape:export-xdpi="136.53"
+   inkscape:export-ydpi="136.53"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="px"
+     inkscape:export-bgcolor="#000000fd"
+     inkscape:zoom="3.3116168"
+     inkscape:cx="103.72577"
+     inkscape:cy="70.509366"
+     inkscape:window-width="1920"
+     inkscape:window-height="1052"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     showgrid="false" />
+  <defs
+     id="defs1">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect2"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,5.3902215,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,3.883833,0,1 @ F,0,0,1,0,4.8611167,0,1 @ F,0,0,1,0,5.3831986,0,1"
+       radius="0"
+       unit="px"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.8px;font-family:'Noto Sans Mono';-inkscape-font-specification:'Noto Sans Mono, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;fill:#5e5e5e;fill-opacity:1;stroke:#5e5e5e;stroke-width:0;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       x="-38.401234"
+       y="67.676109"
+       id="text2-3"
+       transform="rotate(-45.110809)"><tspan
+         sodipodi:role="line"
+         id="tspan2-5"
+         x="-38.401234"
+         y="67.676109"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.8px;font-family:'Noto Sans Mono';-inkscape-font-specification:'Noto Sans Mono, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#5e5e5e;fill-opacity:1;stroke:#5e5e5e;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">Waypointly</tspan></text>
+    <path
+       d="m 91.609375,23.15625 c -3.615436,-0.006 -7.232882,1.372935 -10.007813,4.138672 l -51.953125,51.78125 c -5.54986,5.531474 -5.564677,14.452092 -0.0332,20.001953 l 52.708985,52.884765 c 5.531474,5.54986 14.454045,5.56468 20.003911,0.0332 L 154.2793,100.2168 c 5.54986,-5.531478 5.56467,-14.454049 0.0332,-20.003909 L 101.60352,27.328125 c -2.765742,-2.77493 -6.378709,-4.165876 -9.994145,-4.171875 z"
+       style="fill:none;stroke:#5e5e5e;stroke-width:7.87166;stroke-linejoin:round"
+       id="path1" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:56.2336px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;writing-mode:lr-tb;direction:ltr;fill:#dcdcdc;fill-opacity:1;stroke:#5e5e5e;stroke-width:0;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       x="64.814667"
+       y="108.33766"
+       id="text2"
+       transform="rotate(0.22217776)"><tspan
+         sodipodi:role="line"
+         id="tspan2"
+         x="64.814667"
+         y="108.33766"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:56.2336px;font-family:'Noto Sans Adlam';-inkscape-font-specification:'Noto Sans Adlam, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#dcdcdc;fill-opacity:1;stroke:#5e5e5e;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">W</tspan></text>
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:2.14121;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1-3"
+       width="28.005024"
+       height="27.647232"
+       x="-13.9513"
+       y="22.18434"
+       ry="3.8473499"
+       transform="rotate(-44.495043)" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:2.09148;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1-3-6"
+       width="27.354599"
+       height="27.005117"
+       x="115.5531"
+       y="-108.61144"
+       ry="3.7579942"
+       transform="rotate(43.842178)" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:3.16109;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1-3-9"
+       width="41.343899"
+       height="40.815689"
+       x="111.5934"
+       y="55.683086"
+       ry="5.6798539"
+       transform="rotate(46.222668)" />
+    <path
+       sodipodi:type="star"
+       style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:4.64"
+       id="path2"
+       inkscape:flatsided="true"
+       sodipodi:sides="3"
+       sodipodi:cx="126.82627"
+       sodipodi:cy="36.236076"
+       sodipodi:r1="21.693361"
+       sodipodi:r2="10.846681"
+       sodipodi:arg1="1.2886726"
+       sodipodi:arg2="2.3358701"
+       inkscape:rounded="0.01"
+       inkscape:randomized="0"
+       d="m 132.86562,57.07182 c -0.36089,0.104605 -27.19316,-25.65855 -27.10331,-26.023389 0.0899,-0.364838 35.81754,-10.720687 36.08857,-10.460454 0.27103,0.260234 -8.62438,36.379239 -8.98526,36.483843 z"
+       inkscape:transform-center-x="1.8763809"
+       inkscape:transform-center-y="1.5844748"
+       transform="matrix(0.61712325,-0.0014111,0.0014111,0.61712325,59.076554,20.696194)" />
+  </g>
+</svg>

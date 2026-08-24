@@ -1,10 +1,10 @@
-package es.boffmedia.waypoints.util;
+package com.riprod.waypointly.util;
 
 import com.hypixel.hytale.server.core.ui.LocalizableString;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
+import com.riprod.waypointly.Constants;
+import com.riprod.waypointly.Icons;
 import com.hypixel.hytale.server.core.ui.DropdownEntryInfo;
-import es.boffmedia.waypoints.Constants;
-import es.boffmedia.waypoints.Icons;
 
 import javax.annotation.Nonnull;
 

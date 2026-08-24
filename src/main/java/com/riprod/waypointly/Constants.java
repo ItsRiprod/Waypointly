@@ -1,4 +1,4 @@
-package es.boffmedia.waypoints;
+package com.riprod.waypointly;
 
 public class Constants {
     public static final String ICON_PATH_PREFIX = "Markers/";

@@ -85,22 +85,6 @@ $C.@PageOverlay {
                 Group { Anchor: (Width: 12); }
 
                 Label {
-                    Text: "Y:";
-                    Anchor: (Width: 40);
-                    Style: (FontSize: 15, TextColor: #96a9be, VerticalAlignment: Center, RenderBold: true);
-                }
-
-                TextField #YInput {
-                    FlexWeight: 1;
-                    Anchor: (Height: 40);
-                    Padding: (Horizontal: 12);
-                    Background: #0f1621;
-                    PlaceholderText: "0";
-                }
-
-                Group { Anchor: (Width: 12); }
-
-                Label {
                     Text: "Z:";
                     Anchor: (Width: 40);
                     Style: (FontSize: 15, TextColor: #96a9be, VerticalAlignment: Center, RenderBold: true);

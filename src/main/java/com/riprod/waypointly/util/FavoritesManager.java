@@ -1,4 +1,4 @@
-package es.boffmedia.waypoints.util;
+package com.riprod.waypointly.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 /**
  * Simple favorites persistence using a properties file.
- * Key: <playerUuid>:<worldName>
+ * Key: {@code <playerUuid>:<worldName>}
  * Value: comma-separated waypoint IDs
  */
 public class FavoritesManager {

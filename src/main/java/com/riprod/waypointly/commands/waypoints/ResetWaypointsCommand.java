@@ -1,4 +1,4 @@
-package es.boffmedia.waypoints.commands.waypoints;
+package com.riprod.waypointly.commands.waypoints;
 
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
@@ -7,7 +7,6 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.hypixel.hytale.server.core.entity.entities.player.data.PlayerWorldData;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.Ref;
 
@@ -21,10 +20,9 @@ public class ResetWaypointsCommand extends AbstractPlayerCommand {
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        Player sender = commandContext.senderAs(Player.class);
-        PlayerWorldData perWorldData = sender.getPlayerConfigData().getPerWorldData(world.getName());
+        Player player = store.getComponent(ref, Player.getComponentType());
+        player.getPlayerConfigData().getPerWorldData(world.getName()).setUserMapMarkers(null);
 
-        perWorldData.setWorldMapMarkers(new com.hypixel.hytale.protocol.packets.worldmap.MapMarker[0]);
-        sender.sendMessage(Message.raw("All markers reset."));
+        playerRef.sendMessage(Message.raw("All markers reset."));
     }
 }

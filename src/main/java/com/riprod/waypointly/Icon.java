@@ -1,4 +1,4 @@
-package es.boffmedia.waypoints;
+package com.riprod.waypointly;
 
 public class Icon {
 

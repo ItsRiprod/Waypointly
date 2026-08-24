@@ -1,4 +1,4 @@
-package es.boffmedia.waypoints.pages;
+package com.riprod.waypointly.pages;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -14,8 +14,8 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import es.boffmedia.waypoints.Icons;
-import es.boffmedia.waypoints.IconNames;
+import com.riprod.waypointly.IconNames;
+import com.riprod.waypointly.Icons;
 
 import javax.annotation.Nonnull;
 
