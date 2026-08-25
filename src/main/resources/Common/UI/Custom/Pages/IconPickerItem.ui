@@ -6,7 +6,7 @@ Group {
   Background: #1e2836(0.9);
   Padding: (Full: 8);
 
-  Group #IconContainer {
+  AssetImage #IconContainer {
     Anchor: (Width: 44, Height: 44);
   }
 

@@ -7,19 +7,50 @@
   "AllowSharedWaypoints": true,
   "TeleportCooldownSeconds": 0,
   "TeleportWarmupSeconds": 0,
-  "DefaultIcon": "Coordinate.png",
-  "IconTexturePath": "Markers/",
   "Icons": [
-    { "Name": "Campfire", "Image": "Campfire.png" },
-    { "Name": "Coordinate", "Image": "Coordinate.png" },
-    { "Name": "Death", "Image": "Death.png" },
-    { "Name": "Home", "Image": "Home.png" },
-    { "Name": "Player", "Image": "Player.png" },
-    { "Name": "Portal", "Image": "Portal.png" },
-    { "Name": "Portal Invasion", "Image": "PortalInvasion.png" },
-    { "Name": "Prefab", "Image": "Prefab.png" },
-    { "Name": "Spawn", "Image": "Spawn.png" },
-    { "Name": "Temple Gateway", "Image": "Temple_Gateway.png" },
-    { "Name": "Warp", "Image": "Warp.png" }
+    {
+      "Name": "Coordinate",
+      "Image": "UI/WorldMap/MapMarkers/Coordinate.png"
+    },
+    {
+      "Name": "Campfire",
+      "Image": "UI/WorldMap/MapMarkers/Campfire.png"
+    },
+    {
+      "Name": "Death",
+      "Image": "UI/WorldMap/MapMarkers/Death.png"
+    },
+    {
+      "Name": "Home",
+      "Image": "UI/WorldMap/MapMarkers/Home.png"
+    },
+    {
+      "Name": "Player",
+      "Image": "UI/WorldMap/MapMarkers/Player.png"
+    },
+    {
+      "Name": "Portal",
+      "Image": "UI/WorldMap/MapMarkers/Portal.png"
+    },
+    {
+      "Name": "Portal Invasion",
+      "Image": "UI/WorldMap/MapMarkers/PortalInvasion.png"
+    },
+    {
+      "Name": "Prefab",
+      "Image": "UI/WorldMap/MapMarkers/Prefab.png"
+    },
+    {
+      "Name": "Spawn",
+      "Image": "UI/WorldMap/MapMarkers/Spawn.png"
+    },
+    {
+      "Name": "Temple Gateway",
+      "Image": "UI/WorldMap/MapMarkers/Temple_Gateway.png"
+    },
+    {
+      "Name": "Warp",
+      "Image": "UI/WorldMap/MapMarkers/Warp.png"
+    }
   ]
 }

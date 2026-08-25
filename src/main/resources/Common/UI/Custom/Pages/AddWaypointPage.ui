@@ -44,7 +44,7 @@ $C.@PageOverlay {
                     Style: (FontSize: 15, TextColor: #96a9be, VerticalAlignment: Center, RenderBold: true);
                 }
 
-                Group #IconContainer {
+                AssetImage #IconContainer {
                     Anchor: (Width: 44, Height: 44);
                 }
 

@@ -11,7 +11,7 @@ public final class IconSwatch {
     private IconSwatch() {
     }
 
-    public static void apply(@Nonnull UICommandBuilder ui, @Nonnull String containerSelector, @Nullable String image) {
-        ui.set(containerSelector + ".Background", WaypointlyConfig.get().getTexturePath(image));
+    public static void apply(@Nonnull UICommandBuilder ui, @Nonnull String containerSelector, @Nullable String fileName) {
+        ui.set(containerSelector + ".AssetPath", WaypointlyConfig.get().getIconAssetPath(fileName));
     }
 }

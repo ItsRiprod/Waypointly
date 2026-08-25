@@ -67,22 +67,11 @@ public final class WaypointlyConfig extends Config {
                     + "warmup does not cancel it. 0 warps immediately.")
             .addValidator(Validators.min(0f))
             .add()
-            .append(new KeyedCodec<>("DefaultIcon", Codec.STRING),
-                    (config, s) -> config.defaultIcon = s,
-                    config -> config.defaultIcon)
-            .documentation("Image file name preselected for a new waypoint. Must match an Icons entry.")
-            .add()
-            .append(new KeyedCodec<>("IconTexturePath", Codec.STRING),
-                    (config, s) -> config.iconTexturePath = s,
-                    config -> config.iconTexturePath)
-            .documentation("Prefix joined to each icon Image to build the UI swatch texture path. Runtime "
-                    + "texture paths are rooted at Common/UI/Custom. Point this at your own pack folder to use custom art.")
-            .add()
             .append(new KeyedCodec<>("Icons", WaypointIcon.ARRAY_CODEC),
                     (config, icons) -> config.icons = icons,
                     config -> config.icons)
-            .documentation("Every icon offered in the picker. Add an entry and drop the matching image into "
-                    + "the folder IconTexturePath points at to use your own.")
+            .documentation("Every icon offered in the picker. The first entry is the default for a new "
+                    + "waypoint.")
             .add()
             .build();
 
@@ -93,8 +82,6 @@ public final class WaypointlyConfig extends Config {
     private boolean allowSharedWaypoints = true;
     private float teleportCooldownSeconds = 0f;
     private float teleportWarmupSeconds = 0f;
-    private String defaultIcon = "Coordinate.png";
-    private String iconTexturePath = "Markers/";
 
     private WaypointIcon[] icons = {
         WaypointIcon.of("Campfire", "Campfire.png"),
@@ -148,7 +135,7 @@ public final class WaypointlyConfig extends Config {
 
     @Nonnull
     public String getDefaultIcon() {
-        return resolveIcon(defaultIcon).getImage();
+        return icons.length == 0 ? "" : icons[0].getFileName();
     }
 
     @Nonnull
@@ -157,21 +144,17 @@ public final class WaypointlyConfig extends Config {
     }
 
     @Nonnull
-    public String getTexturePath(@Nullable String image) {
-        return iconTexturePath + resolveIcon(image).getImage();
+    public String getIconAssetPath(@Nullable String fileName) {
+        return resolveIcon(fileName).getPath();
     }
 
     @Nonnull
-    public WaypointIcon resolveIcon(@Nullable String image) {
-        var fallback = WaypointIcon.of(defaultIcon, defaultIcon);
+    public WaypointIcon resolveIcon(@Nullable String fileName) {
         for (var icon : icons) {
-            if (icon.getImage().equals(image)) {
+            if (icon.getFileName().equals(fileName)) {
                 return icon;
             }
-            if (icon.getImage().equals(defaultIcon)) {
-                fallback = icon;
-            }
         }
-        return fallback;
+        return icons.length == 0 ? WaypointIcon.of("", "") : icons[0];
     }
 }

@@ -54,14 +54,14 @@ public class IconPickerPage extends InteractiveCustomUIPage<IconPickerPage.IconP
 
             uiCommandBuilder.append(ICON_LIST_REF, ICON_PICKER_ITEM_UI);
             uiCommandBuilder.set(iconSelector + " #IconButton.Text", icon.getName());
-            IconSwatch.apply(uiCommandBuilder, iconSelector + " #IconContainer", icon.getImage());
+            IconSwatch.apply(uiCommandBuilder, iconSelector + " #IconContainer", icon.getFileName());
 
             uiEventBuilder.addEventBinding(
                     CustomUIEventBindingType.Activating,
                     iconSelector + " #IconButton",
                     new EventData()
                             .append("Action", "Select")
-                            .append("IconFileName", icon.getImage()),
+                            .append("IconFileName", icon.getFileName()),
                     false
             );
         }
