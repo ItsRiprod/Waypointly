@@ -1,0 +1,25 @@
+{
+  "Type": "Waypointly",
+  "MaxWaypoints": -1,
+  "MaxSharedWaypoints": -1,
+  "MaxNameLength": 24,
+  "AllowTeleportForEveryone": false,
+  "AllowSharedWaypoints": true,
+  "TeleportCooldownSeconds": 0,
+  "TeleportWarmupSeconds": 0,
+  "DefaultIcon": "Coordinate.png",
+  "IconTexturePath": "Markers/",
+  "Icons": [
+    { "Name": "Campfire", "Image": "Campfire.png" },
+    { "Name": "Coordinate", "Image": "Coordinate.png" },
+    { "Name": "Death", "Image": "Death.png" },
+    { "Name": "Home", "Image": "Home.png" },
+    { "Name": "Player", "Image": "Player.png" },
+    { "Name": "Portal", "Image": "Portal.png" },
+    { "Name": "Portal Invasion", "Image": "PortalInvasion.png" },
+    { "Name": "Prefab", "Image": "Prefab.png" },
+    { "Name": "Spawn", "Image": "Spawn.png" },
+    { "Name": "Temple Gateway", "Image": "Temple_Gateway.png" },
+    { "Name": "Warp", "Image": "Warp.png" }
+  ]
+}

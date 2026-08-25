@@ -1,9 +1,6 @@
 package com.riprod.waypointly.commands.waypoints;
 
-import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.util.Config;
-import com.riprod.waypointly.config.WaypointsConfig;
 import com.riprod.waypointly.pages.WaypointPage;
 import com.riprod.waypointly.util.PermissionsUtil;
 import com.riprod.waypointly.util.Waypoints;
@@ -21,15 +18,13 @@ import javax.annotation.Nonnull;
 
 public class WaypointCommand extends AbstractPlayerCommand {
 
-    private final Config<WaypointsConfig> config;
-
-    public WaypointCommand(Config<WaypointsConfig> config) {
-        super("wpm", "Parent command for marker operations");
+    public WaypointCommand() {
+        super("wpm", "Parent command for waypoint operations");
         setPermissionGroups(HytalePermissionsProvider.GROUP_ADVENTURER);
-        this.config = config;
         addSubCommand(new AddWaypointCommand());
         addSubCommand(new RemoveWaypointCommand());
-        addAliases("waypoint","wp", "waypoints");
+        addSubCommand(new WaypointPermsCommand());
+        addAliases("waypoint", "wp", "waypoints");
     }
 
     @Override
@@ -41,7 +36,6 @@ public class WaypointCommand extends AbstractPlayerCommand {
             return;
         }
 
-        WaypointPage page = new WaypointPage(playerRef, Waypoints.markers(player, world.getName()), config);
-        player.getPageManager().openCustomPage(ref, store, page);
+        player.getPageManager().openCustomPage(ref, store, new WaypointPage(playerRef, Waypoints.markers(player, world)));
     }
 }

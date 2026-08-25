@@ -11,6 +11,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.Ref;
+import com.riprod.waypointly.util.PermissionsUtil;
 import com.riprod.waypointly.util.Waypoints;
 
 import javax.annotation.Nonnull;
@@ -19,7 +20,7 @@ public class RemoveWaypointCommand extends AbstractPlayerCommand {
     private final RequiredArg<String> nameArg;
 
     public RemoveWaypointCommand() {
-        super("remove", "Remove a map marker by name");
+        super("remove", "Remove a waypoint by name");
         this.nameArg = withRequiredArg("name", "The waypoint name to remove", ArgTypes.STRING);
     }
 
@@ -32,15 +33,19 @@ public class RemoveWaypointCommand extends AbstractPlayerCommand {
         }
 
         Player player = store.getComponent(ref, Player.getComponentType());
-        var perWorldData = player.getPlayerConfigData().getPerWorldData(world.getName());
-
-        var marker = Waypoints.findByName(Waypoints.markers(player, world.getName()), markerName);
+        var marker = Waypoints.findByName(Waypoints.markers(player, world), markerName);
         if (marker == null) {
             playerRef.sendMessage(Message.raw("No waypoint was found with that name."));
             return;
         }
 
-        perWorldData.removeUserMapMarker(marker.getId());
+        boolean shared = Waypoints.isShared(marker);
+        if (shared && !playerRef.getUuid().equals(marker.getCreatedByUuid()) && !PermissionsUtil.canAdminister(playerRef)) {
+            playerRef.sendMessage(Message.raw("That shared waypoint belongs to someone else."));
+            return;
+        }
+
+        Waypoints.store(player, world, shared).removeUserMapMarker(marker.getId());
         playerRef.sendMessage(Message.raw("Waypoint removed successfully."));
     }
 }

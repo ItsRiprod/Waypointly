@@ -22,7 +22,7 @@
     "IncludesAssetPack": true,
     "Website": "https://modtale.net/mod/Waypointly",
     "UpdateChecker": {
-        "CurseForge": ""
+        "CurseForge": "1667204"
     },
     "Main": "com.riprod.waypointly.Waypointly"
 }

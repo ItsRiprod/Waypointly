@@ -8,11 +8,12 @@ import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredAr
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.permissions.provider.HytalePermissionsProvider;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.riprod.waypointly.util.PermissionsUtil;
 import com.riprod.waypointly.util.Waypoints;
+import com.riprod.waypointly.warp.Warps;
 
 import javax.annotation.Nonnull;
 
@@ -20,8 +21,10 @@ public class WaypointTeleportCommand extends AbstractPlayerCommand {
     private final RequiredArg<String> nameArg;
 
     public WaypointTeleportCommand() {
-        super("teleport", "Teleport to a waypoint");
+        super("warp", "Warp to a waypoint");
+        setPermissionGroups(HytalePermissionsProvider.GROUP_ADVENTURER);
         this.nameArg = withRequiredArg("name", "The waypoint name", ArgTypes.STRING);
+        addAliases("wpwarp");
     }
 
     @Override
@@ -33,25 +36,21 @@ public class WaypointTeleportCommand extends AbstractPlayerCommand {
         }
 
         Player player = store.getComponent(ref, Player.getComponentType());
-
-        if (!PermissionsUtil.canTeleport(playerRef)) {
-            playerRef.sendMessage(Message.raw("You do not have permission to teleport to waypoints."));
-            return;
-        }
-
-        var markers = Waypoints.markers(player, world.getName());
+        var markers = Waypoints.markers(player, world);
         if (markers.isEmpty()) {
             playerRef.sendMessage(Message.raw("You don't have any waypoints in this world."));
             return;
         }
 
-        var waypoint = Waypoints.findByName(markers, name);
+        var waypoint = Waypoints.find(player, world, name);
+        if (waypoint == null) {
+            waypoint = Waypoints.findByName(markers, name);
+        }
         if (waypoint == null) {
             playerRef.sendMessage(Message.raw("Waypoint '" + name + "' not found!"));
             return;
         }
 
-        Waypoints.teleport(ref, world, waypoint);
-        playerRef.sendMessage(Message.raw("Teleported to '" + waypoint.getName() + "'!"));
+        Warps.request(ref, store, playerRef, world, waypoint);
     }
 }

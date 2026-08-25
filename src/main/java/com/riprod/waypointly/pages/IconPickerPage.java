@@ -14,34 +14,31 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.riprod.waypointly.IconNames;
-import com.riprod.waypointly.Icons;
+import com.riprod.waypointly.config.WaypointlyConfig;
+import com.riprod.waypointly.util.IconSwatch;
 
 import javax.annotation.Nonnull;
 
 public class IconPickerPage extends InteractiveCustomUIPage<IconPickerPage.IconPickerPageData> {
-    
+
     private final InteractiveCustomUIPage<?> returnPage;
-    private final String currentIcon;
     private final String ICON_LIST_REF = "#IconList";
     private final String ICON_PICKER_ITEM_UI = "Pages/IconPickerItem.ui";
-    
+
     public static class IconPickerPageData {
         public String action;
         public String iconFileName;
 
-        public static final BuilderCodec<IconPickerPageData> CODEC = ((BuilderCodec.Builder<IconPickerPageData>) ((BuilderCodec.Builder<IconPickerPageData>)
-                BuilderCodec.builder(IconPickerPageData.class, IconPickerPageData::new))
+        public static final BuilderCodec<IconPickerPageData> CODEC = BuilderCodec.builder(IconPickerPageData.class, IconPickerPageData::new)
                 .append(new KeyedCodec<>("Action", Codec.STRING), (IconPickerPageData o, String v) -> o.action = v, (IconPickerPageData o) -> o.action)
                 .add()
                 .append(new KeyedCodec<>("IconFileName", Codec.STRING), (IconPickerPageData o, String v) -> o.iconFileName = v, (IconPickerPageData o) -> o.iconFileName)
-                .add())
+                .add()
                 .build();
     }
 
-    public IconPickerPage(@Nonnull PlayerRef playerRef, String currentIcon, InteractiveCustomUIPage<?> returnPage) {
+    public IconPickerPage(@Nonnull PlayerRef playerRef, InteractiveCustomUIPage<?> returnPage) {
         super(playerRef, CustomPageLifetime.CanDismiss, IconPickerPageData.CODEC);
-        this.currentIcon = currentIcon;
         this.returnPage = returnPage;
     }
 
@@ -50,34 +47,25 @@ public class IconPickerPage extends InteractiveCustomUIPage<IconPickerPage.IconP
         uiCommandBuilder.append("Pages/IconPickerPage.ui");
         uiCommandBuilder.clear(ICON_LIST_REF);
 
-        // Add all icons as simple list items
-        java.util.List<Icons.Icon> icons = Icons.getDefaultIcons();
-        
-        for (int i = 0; i < icons.size(); i++) {
-            Icons.Icon icon = icons.get(i);
+        var icons = WaypointlyConfig.get().getIcons();
+        for (int i = 0; i < icons.length; i++) {
+            var icon = icons[i];
             String iconSelector = ICON_LIST_REF + "[" + i + "]";
-            
-            // Append the icon item
+
             uiCommandBuilder.append(ICON_LIST_REF, ICON_PICKER_ITEM_UI);
-            
-            // Set the button text to the icon name
-            uiCommandBuilder.set(iconSelector + " #IconButton.Text", icon.getDisplayName());
-            
-            // Append the icon image to the icon container
-            uiCommandBuilder.append(iconSelector + " #IconContainer", IconNames.resolveIconUiPath(icon.getFileName()));
-            
-            // Add event binding for this icon button
+            uiCommandBuilder.set(iconSelector + " #IconButton.Text", icon.getName());
+            IconSwatch.apply(uiCommandBuilder, iconSelector + " #IconContainer", icon.getImage());
+
             uiEventBuilder.addEventBinding(
                     CustomUIEventBindingType.Activating,
                     iconSelector + " #IconButton",
                     new EventData()
                             .append("Action", "Select")
-                            .append("IconFileName", icon.getFileName()),
+                            .append("IconFileName", icon.getImage()),
                     false
             );
         }
 
-        // Add event binding for Back button
         uiEventBuilder.addEventBinding(
                 CustomUIEventBindingType.Activating,
                 "#BackButton",
@@ -85,7 +73,6 @@ public class IconPickerPage extends InteractiveCustomUIPage<IconPickerPage.IconP
                 false
         );
 
-        // Add event binding for Close (container close button) -> behave like Back
         uiEventBuilder.addEventBinding(
             CustomUIEventBindingType.Activating,
             "#CloseButton",
@@ -96,24 +83,16 @@ public class IconPickerPage extends InteractiveCustomUIPage<IconPickerPage.IconP
 
     @Override
     public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull IconPickerPageData data) {
-        Player player = store.getComponent(ref, Player.getComponentType());
+        var player = store.getComponent(ref, Player.getComponentType());
 
-        switch (data.action) {
-            case "Select":
-                if (returnPage instanceof AddWaypointPage) {
-                    ((AddWaypointPage) returnPage).setSelectedIcon(data.iconFileName);
-                } else if (returnPage instanceof EditWaypointPage) {
-                    ((EditWaypointPage) returnPage).setSelectedIcon(data.iconFileName);
-                }
-                player.getPageManager().openCustomPage(ref, store, returnPage);
-                break;
-
-            case "Back":
-                player.getPageManager().openCustomPage(ref, store, returnPage);
-                break;
-
-            default:
-                break;
+        if ("Select".equals(data.action) && returnPage instanceof IconSelectable selectable) {
+            selectable.setSelectedIcon(data.iconFileName);
         }
+
+        player.getPageManager().openCustomPage(ref, store, returnPage);
+    }
+
+    public interface IconSelectable {
+        void setSelectedIcon(String iconFileName);
     }
 }

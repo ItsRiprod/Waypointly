@@ -1,4 +1,0 @@
-Group {
-  Anchor: (Width: 44, Height: 44);
-  Background: (TexturePath: "../../Markers/Death.png");
-}

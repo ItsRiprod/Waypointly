@@ -32,8 +32,8 @@ Group {
   Group { Anchor: (Width: 16); }
 
   TextButton #TeleportButton {
-    Text: "TP";
-    Anchor: (Width: 50, Height: 38);
+    Text: "WARP";
+    Anchor: (Width: 74, Height: 38);
     Style: $C.@TertiaryTextButtonStyle;
   }
 

@@ -17,28 +17,26 @@ import com.hypixel.hytale.server.core.ui.builder.EventData;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
-import com.hypixel.hytale.server.core.util.Config;
 import com.hypixel.hytale.protocol.Position;
-import com.riprod.waypointly.IconNames;
-import com.riprod.waypointly.config.WaypointsConfig;
+import com.riprod.waypointly.util.IconSwatch;
 import com.riprod.waypointly.util.PermissionsUtil;
 import com.riprod.waypointly.util.Waypoints;
+import com.riprod.waypointly.warp.Warps;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class WaypointPage extends InteractiveCustomUIPage<WaypointPage.WaypointPageData> {
     private final List<UserMapMarker> waypoints;
-    private final Config<WaypointsConfig> config;
-    private final String initialQuery;
     private final String WAYPOINTS_LIST_REF = "#WaypointsList";
     private final String WAYPOINT_ITEM_UI = "Pages/WaypointItem.ui";
-    private long lastSearchTimestamp = 0L;
-    private String lastSearchQuery = "";
+    private String query = "";
     private String currentSort = "distance";
     private List<String> displayedIds = List.of();
 
@@ -60,23 +58,17 @@ public class WaypointPage extends InteractiveCustomUIPage<WaypointPage.WaypointP
                 .build();
     }
 
-    public WaypointPage(@Nonnull PlayerRef playerRef, @Nonnull List<UserMapMarker> waypoints, Config<WaypointsConfig> config) {
-        this(playerRef, waypoints, config, "");
-    }
-
-    public WaypointPage(@Nonnull PlayerRef playerRef, @Nonnull List<UserMapMarker> waypoints, Config<WaypointsConfig> config, String initialQuery) {
+    public WaypointPage(@Nonnull PlayerRef playerRef, @Nonnull List<UserMapMarker> waypoints) {
         super(playerRef, CustomPageLifetime.CanDismiss, WaypointPageData.CODEC);
         this.waypoints = waypoints;
-        this.config = config;
-        this.initialQuery = initialQuery != null ? initialQuery : "";
     }
 
     @Override
-    public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder uiCommandBuilder, @Nonnull UIEventBuilder uiEventBuilder, @Nonnull Store<EntityStore> store) {
-        uiCommandBuilder.append("Pages/WaypointPage.ui");
-        uiCommandBuilder.clear(WAYPOINTS_LIST_REF);
+    public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder ui, @Nonnull UIEventBuilder events, @Nonnull Store<EntityStore> store) {
+        ui.append("Pages/WaypointPage.ui");
+        ui.clear(WAYPOINTS_LIST_REF);
 
-        uiEventBuilder.addEventBinding(
+        events.addEventBinding(
             CustomUIEventBindingType.ValueChanged,
             "#SearchInput",
             new EventData().append("Action", "Search").append("@Query", "#SearchInput.Value"),
@@ -87,22 +79,22 @@ public class WaypointPage extends InteractiveCustomUIPage<WaypointPage.WaypointP
             new DropdownEntryInfo(LocalizableString.fromString("Distance"), "distance"),
             new DropdownEntryInfo(LocalizableString.fromString("Name"), "name")
         };
-        uiCommandBuilder.set("#SortDropdown.Entries", sortEntries);
-        uiCommandBuilder.set("#SortDropdown.Value", this.currentSort);
-        uiEventBuilder.addEventBinding(
+        ui.set("#SortDropdown.Entries", sortEntries);
+        ui.set("#SortDropdown.Value", this.currentSort);
+        events.addEventBinding(
             CustomUIEventBindingType.ValueChanged,
             "#SortDropdown",
             new EventData().append("Action", "Sort").append("@Sort", "#SortDropdown.Value"),
             false
         );
 
-        if (this.initialQuery != null && !this.initialQuery.isEmpty()) {
-            uiCommandBuilder.set("#SearchInput.Value", this.initialQuery);
+        if (!this.query.isEmpty()) {
+            ui.set("#SearchInput.Value", this.query);
         }
 
-        populateList(ref, store, uiCommandBuilder, uiEventBuilder, sortByCurrentMode(ref, store, this.waypoints));
+        populateList(ref, store, ui, events, sorted(ref, store, filtered()));
 
-        uiEventBuilder.addEventBinding(
+        events.addEventBinding(
             CustomUIEventBindingType.Activating,
             "#CloseButton",
             new EventData().append("Action", "Close"),
@@ -110,9 +102,9 @@ public class WaypointPage extends InteractiveCustomUIPage<WaypointPage.WaypointP
         );
     }
 
-    private void refreshWaypoints(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull List<UserMapMarker> markers, String query) {
-        var waypointsWithDistance = sortByCurrentMode(ref, store, markers);
-        if (waypointsWithDistance.stream().map(w -> w.waypoint.getId()).toList().equals(this.displayedIds)) {
+    private void refresh(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull List<UserMapMarker> markers) {
+        var ordered = sorted(ref, store, markers);
+        if (ordered.stream().map(w -> w.waypoint.getId()).toList().equals(this.displayedIds)) {
             return;
         }
 
@@ -120,39 +112,49 @@ public class WaypointPage extends InteractiveCustomUIPage<WaypointPage.WaypointP
         UIEventBuilder events = new UIEventBuilder();
 
         ui.clear(WAYPOINTS_LIST_REF);
+        ui.set("#SearchInput.Value", this.query);
 
-        if (query != null) {
-            ui.set("#SearchInput.Value", query);
-        }
-
-        populateList(ref, store, ui, events, waypointsWithDistance);
+        populateList(ref, store, ui, events, ordered);
 
         this.sendUpdate(ui, events, false);
     }
 
     @Nonnull
-    private List<WaypointWithDistance> sortByCurrentMode(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull List<UserMapMarker> markers) {
-        TransformComponent transformComponent = store.getComponent(ref, TransformComponent.getComponentType());
-        Position playerPosition = transformComponent.getSentTransform().position;
+    private List<UserMapMarker> filtered() {
+        if (query.isEmpty()) return waypoints;
 
-        List<WaypointWithDistance> waypointsWithDistance = new ArrayList<>();
+        var lower = query.toLowerCase();
+        List<UserMapMarker> matches = new ArrayList<>();
+        for (var marker : waypoints) {
+            if (Waypoints.displayName(marker).toLowerCase().contains(lower)) {
+                matches.add(marker);
+            }
+        }
+        return matches;
+    }
+
+    @Nonnull
+    private List<WaypointWithDistance> sorted(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull List<UserMapMarker> markers) {
+        Position playerPosition = store.getComponent(ref, TransformComponent.getComponentType()).getSentTransform().position;
+
+        List<WaypointWithDistance> withDistance = new ArrayList<>();
         for (var waypoint : markers) {
-            waypointsWithDistance.add(new WaypointWithDistance(waypoint, horizontalDistance(playerPosition, waypoint)));
+            withDistance.add(new WaypointWithDistance(waypoint, horizontalDistance(playerPosition, waypoint)));
         }
 
         if ("name".equalsIgnoreCase(this.currentSort)) {
-            waypointsWithDistance.sort(Comparator.comparing(w -> w.waypoint.getName() != null ? w.waypoint.getName().toLowerCase() : ""));
+            withDistance.sort(Comparator.comparing(w -> Waypoints.displayName(w.waypoint).toLowerCase()));
         } else {
-            waypointsWithDistance.sort(Comparator.comparingDouble(w -> w.distance));
+            withDistance.sort(Comparator.comparingDouble(w -> w.distance));
         }
 
-        return waypointsWithDistance;
+        return withDistance;
     }
 
-    private void populateList(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull UICommandBuilder ui, @Nonnull UIEventBuilder events, @Nonnull List<WaypointWithDistance> waypointsWithDistance) {
-        boolean canTeleport = PermissionsUtil.canTeleport(playerRef);
+    private void populateList(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull UICommandBuilder ui, @Nonnull UIEventBuilder events, @Nonnull List<WaypointWithDistance> ordered) {
+        boolean canWarp = PermissionsUtil.canTeleport(playerRef);
 
-        this.displayedIds = waypointsWithDistance.stream().map(w -> w.waypoint.getId()).toList();
+        this.displayedIds = ordered.stream().map(w -> w.waypoint.getId()).toList();
 
         events.addEventBinding(
             CustomUIEventBindingType.Activating,
@@ -161,30 +163,31 @@ public class WaypointPage extends InteractiveCustomUIPage<WaypointPage.WaypointP
             false
         );
 
-        if (waypointsWithDistance.isEmpty()) {
+        if (ordered.isEmpty()) {
             ui.appendInline(WAYPOINTS_LIST_REF, "Label { Text: \"No waypoints\"; Anchor: (Height: 40); Style: (FontSize: 14, TextColor: #6e7da1, HorizontalAlignment: Center, VerticalAlignment: Center); }");
             return;
         }
 
         int i = 0;
-        for (var waypointData : waypointsWithDistance) {
+        for (var entry : ordered) {
             String selector = "#WaypointsList[" + i + "]";
             ui.append(WAYPOINTS_LIST_REF, WAYPOINT_ITEM_UI);
 
-            String waypointId = waypointData.waypoint.getId();
-            String coordinatesText = String.format("X: %.0f  Z: %.0f  -  %.1f blocks away",
-                waypointData.waypoint.getX(), waypointData.waypoint.getZ(), waypointData.distance);
+            String waypointId = entry.waypoint.getId();
+            String coordinatesText = String.format("X: %.0f  Z: %.0f  -  %.1f blocks away%s",
+                entry.waypoint.getX(), entry.waypoint.getZ(), entry.distance,
+                Waypoints.isShared(entry.waypoint) ? "  -  shared" : "");
 
-            ui.set(selector + " #WaypointName.Text", waypointData.waypoint.getName());
+            ui.set(selector + " #WaypointName.Text", Waypoints.displayName(entry.waypoint));
             ui.set(selector + " #WaypointCoordinates.Text", coordinatesText);
-            ui.append(selector + " #IconContainer", IconNames.resolveIconUiPath(waypointData.waypoint.getIcon()));
-            ui.set(selector + " #TeleportButton.Visible", canTeleport);
+            IconSwatch.apply(ui, selector + " #IconContainer", entry.waypoint.getIcon());
+            ui.set(selector + " #TeleportButton.Visible", canWarp);
 
-            if (canTeleport) {
+            if (canWarp) {
                 events.addEventBinding(
                     CustomUIEventBindingType.Activating,
                     selector + " #TeleportButton",
-                    new EventData().append("Action", "Teleport").append("WaypointId", waypointId),
+                    new EventData().append("Action", "Warp").append("WaypointId", waypointId),
                     false
                 );
             }
@@ -213,94 +216,58 @@ public class WaypointPage extends InteractiveCustomUIPage<WaypointPage.WaypointP
         return Math.sqrt(dx * dx + dz * dz);
     }
 
-    private static class WaypointWithDistance {
-        final UserMapMarker waypoint;
-        final double distance;
-
-        WaypointWithDistance(UserMapMarker waypoint, double distance) {
-            this.waypoint = waypoint;
-            this.distance = distance;
-        }
+    private record WaypointWithDistance(UserMapMarker waypoint, double distance) {
     }
 
     @Override
     public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull WaypointPageData data) {
         Player player = store.getComponent(ref, Player.getComponentType());
         var world = player.getWorld();
-        var perWorldData = player.getPlayerConfigData().getPerWorldData(world.getName());
 
         switch (data.action) {
-            case "Teleport": {
-                if (data.waypointId == null || data.waypointId.isEmpty()) break;
+            case "Warp": {
+                var waypoint = resolve(player, world, data.waypointId);
+                if (waypoint == null) break;
 
-                var waypoint = perWorldData.getUserMapMarker(data.waypointId);
-                if (waypoint == null) {
-                    playerRef.sendMessage(Message.raw("No waypoint was found with that ID."));
-                    break;
-                }
-
-                Waypoints.teleport(ref, world, waypoint);
-                playerRef.sendMessage(Message.raw("Teleported to '" + waypoint.getName() + "'!"));
+                Warps.request(ref, store, playerRef, world, waypoint);
                 break;
             }
             case "Edit": {
-                if (data.waypointId == null || data.waypointId.isEmpty()) break;
+                var waypoint = resolve(player, world, data.waypointId);
+                if (waypoint == null) break;
 
-                var waypoint = perWorldData.getUserMapMarker(data.waypointId);
-                if (waypoint == null) {
-                    playerRef.sendMessage(Message.raw("No waypoint was found with that ID."));
+                if (!canModify(waypoint)) {
+                    playerRef.sendMessage(Message.raw("That shared waypoint belongs to someone else."));
                     break;
                 }
 
-                player.getPageManager().openCustomPage(ref, store, new EditWaypointPage(playerRef, waypoint, config));
+                player.getPageManager().openCustomPage(ref, store, new EditWaypointPage(playerRef, waypoint));
                 break;
             }
             case "Remove": {
-                if (data.waypointId == null || data.waypointId.isEmpty()) break;
+                var waypoint = resolve(player, world, data.waypointId);
+                if (waypoint == null) break;
 
-                if (perWorldData.getUserMapMarker(data.waypointId) == null) {
-                    playerRef.sendMessage(Message.raw("No waypoint was found with that ID."));
+                if (!canModify(waypoint)) {
+                    playerRef.sendMessage(Message.raw("That shared waypoint belongs to someone else."));
                     break;
                 }
 
-                perWorldData.removeUserMapMarker(data.waypointId);
+                Waypoints.store(player, world, Waypoints.isShared(waypoint)).removeUserMapMarker(waypoint.getId());
                 playerRef.sendMessage(Message.raw("Waypoint removed successfully."));
-                player.getPageManager().openCustomPage(ref, store, new WaypointPage(playerRef, Waypoints.markers(player, world.getName()), config));
+                player.getPageManager().openCustomPage(ref, store, new WaypointPage(playerRef, Waypoints.markers(player, world)));
                 break;
             }
             case "Create":
-                player.getPageManager().openCustomPage(ref, store, new AddWaypointPage(playerRef, config));
+                player.getPageManager().openCustomPage(ref, store, new AddWaypointPage(playerRef));
                 break;
-            case "Search": {
-                String q = data.query != null ? data.query.trim() : "";
-                long now = System.currentTimeMillis();
-                if (q.equals(this.lastSearchQuery) && (now - this.lastSearchTimestamp) < 1000) {
-                    break;
-                }
-                this.lastSearchTimestamp = now;
-                this.lastSearchQuery = q;
-
-                if (q.isEmpty()) {
-                    refreshWaypoints(ref, store, Waypoints.markers(player, world.getName()), "");
-                    break;
-                }
-
-                String qLower = q.toLowerCase();
-                List<UserMapMarker> filtered = new ArrayList<>();
-                for (var marker : this.waypoints) {
-                    String name = marker.getName() != null ? marker.getName() : "";
-                    String id = marker.getId() != null ? marker.getId() : "";
-                    if (name.toLowerCase().contains(qLower) || id.toLowerCase().contains(qLower)) {
-                        filtered.add(marker);
-                    }
-                }
-
-                refreshWaypoints(ref, store, filtered, q);
+            case "Search":
+                this.query = data.query != null ? data.query.trim() : "";
+                refresh(ref, store, filtered());
                 break;
-            }
             case "Sort":
                 this.currentSort = data.sort != null ? data.sort : "distance";
-                refreshWaypoints(ref, store, Waypoints.markers(player, world.getName()), this.lastSearchQuery);
+                refresh(ref, store, filtered());
                 break;
             case "Close":
                 this.close();
@@ -308,5 +275,22 @@ public class WaypointPage extends InteractiveCustomUIPage<WaypointPage.WaypointP
             default:
                 break;
         }
+    }
+
+    @Nullable
+    private UserMapMarker resolve(@Nonnull Player player, @Nonnull World world, String waypointId) {
+        if (waypointId == null || waypointId.isEmpty()) return null;
+
+        var waypoint = Waypoints.find(player, world, waypointId);
+        if (waypoint == null) {
+            playerRef.sendMessage(Message.raw("No waypoint was found with that ID."));
+        }
+        return waypoint;
+    }
+
+    private boolean canModify(@Nonnull UserMapMarker waypoint) {
+        return !Waypoints.isShared(waypoint)
+            || playerRef.getUuid().equals(waypoint.getCreatedByUuid())
+            || PermissionsUtil.canAdminister(playerRef);
     }
 }

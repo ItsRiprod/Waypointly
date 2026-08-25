@@ -12,6 +12,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.Ref;
+import com.riprod.waypointly.config.WaypointlyConfig;
 import com.riprod.waypointly.util.Waypoints;
 
 import javax.annotation.Nonnull;
@@ -20,7 +21,7 @@ public class AddWaypointCommand extends AbstractPlayerCommand {
     private final RequiredArg<String> nameArg;
 
     public AddWaypointCommand() {
-        super("add", "Add a map marker with a name");
+        super("add", "Add a waypoint at your current position");
         this.nameArg = withRequiredArg("name", "The waypoint name", ArgTypes.STRING);
     }
 
@@ -34,12 +35,24 @@ public class AddWaypointCommand extends AbstractPlayerCommand {
             return;
         }
 
+        var config = WaypointlyConfig.get();
+        if (markerName.length() > config.getMaxNameLength()) {
+            playerRef.sendMessage(Message.raw("Waypoint names are limited to " + config.getMaxNameLength() + " characters."));
+            return;
+        }
+
         Player player = store.getComponent(ref, Player.getComponentType());
+        if (Waypoints.isAtLimit(player, world, playerRef.getUuid(), false)) {
+            playerRef.sendMessage(Message.raw("You have reached the maximum number of waypoints (" + config.getMaxWaypoints() + ")."));
+            return;
+        }
+
         TransformComponent transformComponent = store.getComponent(ref, TransformComponent.getComponentType());
         var position = transformComponent.getSentTransform().position;
 
-        var marker = Waypoints.create(playerRef, markerName, (float) position.x, (float) position.z, "Coordinate.png");
-        player.getPlayerConfigData().getPerWorldData(world.getName()).addUserMapMarker(marker);
+        var marker = Waypoints.create(playerRef, markerName, (float) position.x, (float) position.z,
+                config.getDefaultIcon(), null, false);
+        Waypoints.store(player, world, false).addUserMapMarker(marker);
 
         playerRef.sendMessage(Message.raw("Waypoint created: " + markerName));
     }
