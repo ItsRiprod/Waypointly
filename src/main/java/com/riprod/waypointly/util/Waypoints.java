@@ -11,6 +11,7 @@ import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockChunk;
+import com.hypixel.hytale.server.core.universe.world.chunk.heightmap.HeightmapColumn;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
@@ -132,8 +133,8 @@ public final class Waypoints {
                 if (!ref.isValid()) return;
 
                 final var entityStore = ref.getStore();
-                final var blockChunk = chunkRef.getStore().getComponent(chunkRef, BlockChunk.getComponentType());
-                final var position = new Vector3d(x, blockChunk.getHeight(blockX, blockZ) + 2, z);
+                final var heightCol = chunkRef.getStore().getComponent(chunkRef, HeightmapColumn.getComponentType());
+                final var position = new Vector3d(x, heightCol.getHeight(blockX, blockZ) + 2, z);
                 final var headRotation = entityStore.getComponent(ref, HeadRotation.getComponentType());
                 final var rotation = headRotation != null ? headRotation.getRotation() : Rotation3f.ZERO;
 

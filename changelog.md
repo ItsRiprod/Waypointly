@@ -1,4 +1,7 @@
 # Changelog
+## [2.3.0] Changes
+
+- Added update 7 support
 
 ## [2.2.0] Changes
 
